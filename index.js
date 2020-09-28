@@ -73,18 +73,24 @@ const promptManagerInfo = () => {
         }
 
     ])
+        .then(managerInfo => {
+            const { managerName, managerID, managerEmail, officeNumber } = managerInfo;
+            const teamManager = new Manager(managerName, managerID, managerEmail, officeNumber);
+            const team = new Team(teamManager);
+            return team;
+    })
         
 }
 
-const promptEmployee = manager => {
-    console.log (manager);
-    //  if (!manager.engineers && !manager.interns) {
-    //      manager.engineers = [];
-    //      manager.interns = []
-    //  }
-    const { managerName, managerID, managerEmail, officeNumber } = manager;
-    const teamManager = new Manager(managerName, managerID, managerEmail, officeNumber);
-    const team = new Team (teamManager);
+const promptEmployee = team => {
+    console.log (team);
+      if (!team.engineersArr && !team.internsArr) {
+          team.engineersArr = [];
+          team.internsArr = []
+      }
+    // const { managerName, managerID, managerEmail, officeNumber } = manager;
+    // const teamManager = new Manager(managerName, managerID, managerEmail, officeNumber);
+    // const team = new Team (teamManager);
     console.log(`
 =============================
 Add a New Employee
@@ -111,9 +117,6 @@ Add a New Employee
         .then(newEmployee => {
             console.log(newEmployee);
             if (newEmployee.confirmEmployeeType[0] === "Engineer") {// prompt for engineer information
-                if (!team.engineersArr) {
-                    team.engineersArr = [];
-                }
                 return inquirer.prompt([
                     {
                         type: 'input',
@@ -126,7 +129,7 @@ Add a New Employee
                             }
                             else {
                                 console.log(`
-                    Please enter the Engineer's name`);
+Please enter the Engineer's name`);
                                 return false;
                             }
                         }
@@ -142,7 +145,7 @@ Add a New Employee
                             }
                             else {
                                 console.log(`
-                    Please enter a valid ID number for the Engineer`);
+Please enter a valid ID number for the Engineer`);
                                 return false;
                             }
                         },
@@ -171,25 +174,123 @@ Add a New Employee
                             }
                             else {
                                 console.log(`
-                    Please enter a github username for the Engineer`);
+Please enter a github username for the Engineer`);
                                 return false;
                             }
                         }
-                    }
+                    },
                 ])
                     .then(engineerInfo => {
                         const { engineerName, engineerID, engineerEmail, github } = engineerInfo;
                         const newEngineer = new Engineer(engineerName, engineerID, engineerEmail, github);
                         team.engineersArr.push(newEngineer);
                         console.log(team);
+                            return team;
                     })
-                console.log('I chose Engineer');
+                console.log('I chose to add an Engineer');
             }
-            else if (newEmployee, confirmEmployeeType === "Intern") {// prompt for intern information
+            else if (newEmployee.confirmEmployeeType[0] === "Intern") {// prompt for intern information
+                return inquirer.prompt([
+                    {
+                        type: 'input',
+                        name: 'internName',
+                        message: "What is the Intern's name",
+                        validate: nameInput => {
+                            if (nameInput) {
+
+                                return true;
+                            }
+                            else {
+                                console.log(`
+                    Please enter the Intern's name`);
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        type: 'input',
+                        name: 'internID',
+                        message: "What is the Intern's employee ID?",
+                        validate: idNumber => {
+                            var reg = /^\d+$/;
+                            if (reg.test(idNumber)) {
+                                return true;
+                            }
+                            else {
+                                console.log(`
+                    Please enter a valid ID number for the Intern`);
+                                return false;
+                            }
+                        },
+                    },
+                    {
+                        type: 'input',
+                        name: 'internEmail',
+                        message: "What is the Intern's email address?",
+                        validate: emailInput => {
+                            if (emailInput.includes("@")) {
+                                return true;
+                            }
+                            else {
+                                console.log(`\nPlease enter a valid email address for the Intern`);
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        type: 'input',
+                        name: 'school',
+                        message: "What school does the intern attend?",
+                        validate: githubInput => {
+                            if (githubInput) {
+                                return true;
+                            }
+                            else {
+                                console.log(`
+                    Please enter a github username for the Intern`);
+                                return false;
+                            }
+                        }
+                    }
+                ])
+                    .then(internInfo => {
+                        const { internName, internID, internEmail, school} = internInfo;
+                        const newIntern = new Intern(internName, internID, internEmail, school);
+                        team.internsArr.push(newIntern);
+                        return team;
+
+                    })
                 console.log('I chose intern');
             }
         })
-    
+        .then(() => {
+            return inquirer.prompt([
+                {
+                    type: 'confirm',
+                    name: 'confirmAddEmployee',
+                    message: 'Would you like to add another employee',
+                    default: false,
+                    
+                }
+            ])
+        })
+        .then(confirmAdd => {
+            if (confirmAdd.confirmAddEmployee) {
+                return promptEmployee(team);
+            }
+            else {
+                return team;
+            }
+            
+        })
+10    
 }
 promptManagerInfo()
     .then(promptEmployee)
+    .then(team => {
+        console.table(team);
+        console.table(team.engineersArr);
+        console.table(team.internsArr);
+
+    }
+    )
