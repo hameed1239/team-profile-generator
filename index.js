@@ -3,11 +3,13 @@ const Manager = require('./lib/Manager');
 const Engineer = require('./lib/Engineer');
 const Intern = require('./lib/Intern');
 const Team = require('./lib/Team');
+const generatePage = require("./src/page-template");
+const { writeFile, copyFile } = require('./utils/generate-site.js');
 
 const inquirer = require("inquirer");
 
 const promptManagerInfo = () => {
-    
+    const team = {};
     return inquirer.prompt([
         {
             type: 'input',
@@ -75,8 +77,19 @@ const promptManagerInfo = () => {
     ])
         .then(managerInfo => {
             const { managerName, managerID, managerEmail, officeNumber } = managerInfo;
-            const teamManager = new Manager(managerName, managerID, managerEmail, officeNumber);
-            const team = new Team(teamManager);
+            //const teamManager = new Manager(managerName, managerID, managerEmail, officeNumber);
+            const teamManager = new Manager();
+            teamManager.setName(managerName);
+            teamManager.setID(managerID);
+            teamManager.setEmail(managerEmail);
+            teamManager.setOfficeNumber(officeNumber);
+            team.manager = {};
+            console.log(teamManager);
+            team.manager.name = teamManager.getName();
+            team.manager.email = teamManager.getEmail();
+            team.manager.ID = teamManager.getID();
+            team.manager.officeNumber = teamManager.getOfficeNumber();
+            console.log(team);
             return team;
     })
         
@@ -182,9 +195,18 @@ Please enter a github username for the Engineer`);
                 ])
                     .then(engineerInfo => {
                         const { engineerName, engineerID, engineerEmail, github } = engineerInfo;
-                        const newEngineer = new Engineer(engineerName, engineerID, engineerEmail, github);
-                        team.engineersArr.push(newEngineer);
-                        console.log(team);
+                        const newEngineer = new Engineer();
+                        newEngineer.setName(engineerName);
+                        newEngineer.setID(engineerID);
+                        newEngineer.setEmail(engineerEmail);
+                        newEngineer.setGitHubUsername(github);
+                        team.engineersArr.push(
+                            {
+                                name: newEngineer.getName(),
+                                id: newEngineer.getID(),
+                                email: newEngineer.getEmail(),
+                                github: newEngineer.getGitHubUsername()
+                            });
                             return team;
                     })
                 console.log('I chose to add an Engineer');
@@ -255,8 +277,19 @@ Please enter a github username for the Engineer`);
                 ])
                     .then(internInfo => {
                         const { internName, internID, internEmail, school} = internInfo;
-                        const newIntern = new Intern(internName, internID, internEmail, school);
-                        team.internsArr.push(newIntern);
+                        // const newIntern = new Intern(internName, internID, internEmail, school);
+                        const newIntern = new Intern();
+                        newIntern.setName(internName);
+                        newIntern.setID(internID);
+                        newIntern.setEmail(internEmail);
+                        newIntern.setSchool(school);
+                        team.internsArr.push(
+                            {
+                                name: newIntern.getName(),
+                                id: newIntern.getID(),
+                                email: newIntern.getEmail(),
+                                school: newIntern.getSchool()
+                            });
                         return team;
 
                     })
@@ -285,12 +318,61 @@ Please enter a github username for the Engineer`);
         })
 10    
 }
-promptManagerInfo()
-    .then(promptEmployee)
-    .then(team => {
-        console.table(team);
-        console.table(team.engineersArr);
-        console.table(team.internsArr);
+const newTeam = {
+    manager:{
+        name: 'Hameed',
+        id: '1',
+        email: 'hameed@',
+        officeNumber: '21698459'
+  },
+    engineersArr: [
+        {
+            name: 'Fathiat',
+            id: '2',
+            email: 'ftsule@',
+            gitHubUsername: 'fathiat1239'
+        },
+        {
+            name: 'Abdul',
+            id: '3',
+            email: 'Abdul@',
+            gitHubUsername: 'Abdul1239'
+        }
+    ],
+    internsArr: [
+         {
+            name: 'Abdulzahir',
+            id: '4',
+            email: 'Abdulzahir@',
+            school: 'Harvard'
+        },
+         {
+            name: 'Nayla',
+            id: '4',
+            email: 'Nayla@',
+            school: 'Harvard'
+        }
+    ]
+}
 
-    }
-    )
+promptManagerInfo()
+    //.then(promptEmployee)
+    .then(team => {
+    //    console.table(team);
+     //   console.table(team.engineersArr);
+     //   console.table(team.internsArr);
+        return generatePage(newTeam);
+    })
+    .then(pageHTML => {
+        return writeFile(pageHTML);
+    })
+    .then(writeFileResponse => {
+        console.log(writeFileResponse);
+        return copyFile();
+    })
+    .then(copyFileResponse => {
+        console.log(copyFileResponse);
+    })
+    .catch(err => {
+        console.log(err);
+    });
