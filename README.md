@@ -13,10 +13,11 @@
   * [Questions](#questions)
 
   ## Installation
-  1.) Fork this repository to a local repository
-
+  1. Fork this repository to a local repository
+  2. Install node packages by running "node init and follow the prompts"(requires node already be installed on your machine. reference: nodejs.org)
+  3. Install dependencies by running "npm install"
   ## Usage
-  2.) Install node packages by running "node init and follow the prompts"(requires node already be installed on your machine. reference: nodejs.org)
+  This Application should only be used for personal projects. You may not sell this or distribute this application
 
   ## License
   MIT
