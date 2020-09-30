@@ -77,33 +77,27 @@ const promptManagerInfo = () => {
     ])
         .then(managerInfo => {
             const { managerName, managerID, managerEmail, officeNumber } = managerInfo;
-            //const teamManager = new Manager(managerName, managerID, managerEmail, officeNumber);
             const teamManager = new Manager();
             teamManager.setName(managerName);
             teamManager.setID(managerID);
             teamManager.setEmail(managerEmail);
             teamManager.setOfficeNumber(officeNumber);
             team.manager = {};
-            console.log(teamManager);
             team.manager.name = teamManager.getName();
             team.manager.email = teamManager.getEmail();
-            team.manager.ID = teamManager.getID();
+            team.manager.id = teamManager.getID();
             team.manager.officeNumber = teamManager.getOfficeNumber();
-            console.log(team);
             return team;
     })
         
 }
 
 const promptEmployee = team => {
-    console.log (team);
-      if (!team.engineersArr && !team.internsArr) {
-          team.engineersArr = [];
-          team.internsArr = []
-      }
-    // const { managerName, managerID, managerEmail, officeNumber } = manager;
-    // const teamManager = new Manager(managerName, managerID, managerEmail, officeNumber);
-    // const team = new Team (teamManager);
+    if (!team.engineersArr && !team.internsArr) {
+        team.engineersArr = [];
+        team.internsArr = []
+    }
+    
     console.log(`
 =============================
 Add a New Employee
@@ -128,7 +122,6 @@ Add a New Employee
         }
     ])
         .then(newEmployee => {
-            console.log(newEmployee);
             if (newEmployee.confirmEmployeeType[0] === "Engineer") {// prompt for engineer information
                 return inquirer.prompt([
                     {
@@ -207,9 +200,8 @@ Please enter a github username for the Engineer`);
                                 email: newEngineer.getEmail(),
                                 github: newEngineer.getGitHubUsername()
                             });
-                            return team;
+                        return team;
                     })
-                console.log('I chose to add an Engineer');
             }
             else if (newEmployee.confirmEmployeeType[0] === "Intern") {// prompt for intern information
                 return inquirer.prompt([
@@ -276,8 +268,7 @@ Please enter a github username for the Engineer`);
                     }
                 ])
                     .then(internInfo => {
-                        const { internName, internID, internEmail, school} = internInfo;
-                        // const newIntern = new Intern(internName, internID, internEmail, school);
+                        const { internName, internID, internEmail, school } = internInfo;
                         const newIntern = new Intern();
                         newIntern.setName(internName);
                         newIntern.setID(internID);
@@ -293,7 +284,6 @@ Please enter a github username for the Engineer`);
                         return team;
 
                     })
-                console.log('I chose intern');
             }
         })
         .then(() => {
@@ -316,52 +306,13 @@ Please enter a github username for the Engineer`);
             }
             
         })
-10    
-}
-const newTeam = {
-    manager:{
-        name: 'Hameed',
-        id: '1',
-        email: 'hameed@',
-        officeNumber: '21698459'
-  },
-    engineersArr: [
-        {
-            name: 'Fathiat',
-            id: '2',
-            email: 'ftsule@',
-            gitHubUsername: 'fathiat1239'
-        },
-        {
-            name: 'Abdul',
-            id: '3',
-            email: 'Abdul@',
-            gitHubUsername: 'Abdul1239'
-        }
-    ],
-    internsArr: [
-         {
-            name: 'Abdulzahir',
-            id: '4',
-            email: 'Abdulzahir@',
-            school: 'Harvard'
-        },
-         {
-            name: 'Nayla',
-            id: '4',
-            email: 'Nayla@',
-            school: 'Harvard'
-        }
-    ]
+    10
 }
 
 promptManagerInfo()
-    //.then(promptEmployee)
+    .then(promptEmployee)
     .then(team => {
-    //    console.table(team);
-     //   console.table(team.engineersArr);
-     //   console.table(team.internsArr);
-        return generatePage(newTeam);
+        return generatePage(team);
     })
     .then(pageHTML => {
         return writeFile(pageHTML);
